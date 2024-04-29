@@ -5,7 +5,7 @@ all the db data extraction or injection logic where get into this file
 from models import UsersModel
 from schemas.auth import SignUpResponse, BareResponse, BareUsersModel
 from odmantic import AIOEngine
-from fastapi import status, Request, Response
+from fastapi import status, Request, Response, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from utils.emailer import send_mail
@@ -20,6 +20,7 @@ from datetime import datetime
 from odmantic import ObjectId
 from pydantic import EmailStr
 from typing import Annotated
+from utils.uploads import upload
 
 async def register(request: Request, user_details: SignUp , connection: AIOEngine):
     user = await connection.get_collection(UsersModel).find_one({
@@ -158,8 +159,16 @@ async def resend_email_verification(request: Request,user: UsersModel | None, co
             ).model_dump()
         )
 
-async def update_avatar():
-    pass
+async def update_avatar(user: UsersModel, update_avatar:UploadFile, connection: AIOEngine):
+    if update_avatar :
+        id = await upload(update_avatar.filename, data= await update_avatar.read())
+        user.avatar = id
+        await connection.save(user)
+        return BareResponse(status= True, message= "Avatar Updated Successfully")
+    else:
+        raise HTTPException(status_code= status.HTTP_406_NOT_ACCEPTABLE,
+                            detail= BareResponse(status= False, 
+                                                message= "Invalid Data").model_dump())
 
 async def change_current_password(user: UsersModel, user_details: ChangePassword,connection: AIOEngine):
     if user and user.verify_password(user_details.password):

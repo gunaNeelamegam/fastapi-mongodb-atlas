@@ -1,4 +1,4 @@
-from odmantic import Model,Field
+from odmantic import Model,Field, ObjectId, Reference
 from pydantic import EmailStr
 from datetime import datetime, timezone
 from core import AvailableRoles, AvailableLoginTypes
@@ -27,7 +27,7 @@ class UsersModel(Model):
                 description= "UserName must be more than 4 to 50 character's")
     email: EmailStr = Field(unique= True)
     role: AvailableRoles = Field(default= AvailableRoles.user)
-    avatar: str  = Field(default= "https://via.placeholder.com/200x200.png")
+    avatar: ObjectId | None = Field(default= None)
     password: str = Field(description= "Password must be more than 8 character's", min_length = 8)
     refresh_token: str | None = Field(default = None, description= "Refresh Token for revokeing the access token")
     login_type: AvailableLoginTypes = Field(default = AvailableLoginTypes.EMAIL_PASSWORD, description= "Login Type for OAuth")

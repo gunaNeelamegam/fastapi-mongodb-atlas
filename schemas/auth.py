@@ -1,6 +1,5 @@
-from pydantic import BaseModel, Field, EmailStr, validator
-from config.dbconnection import connections
-from models import UsersModel
+from pydantic import BaseModel, Field, EmailStr
+from odmantic import EmbeddedModel, Field as OField
 # from utils import async_validation
 
 # async def is_email_unique(email: str, connection = connections()) -> bool:
@@ -28,11 +27,18 @@ class BareResponse(BaseModel):
     message: str
     status: bool = Field(default= True) 
 
+class AvatarInfo(EmbeddedModel):
+    filename: str
+    chunkSize: int
+    length: int
+    uploadDate: datetime
+
 class BareUsersModel(BaseModel):
     username: str
     role: str
     login_type: str
     is_email_verified: bool 
+    photo: AvatarInfo
     created_at: datetime
     updated_at:  datetime | None
     
