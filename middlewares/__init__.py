@@ -1,0 +1,1 @@
+from .auth_middleware import current_user
