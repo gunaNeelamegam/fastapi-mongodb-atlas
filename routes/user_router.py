@@ -8,8 +8,7 @@ from schemas import ChangePassword
 from schemas.auth import BareResponse
 from  controllers import users
 from core import AvailableRoles
-from schemas.auth import BareUsersModel
-from utils.uploads import user_storage
+from schemas.auth import BareUserModelWithPhoto
 from middlewares import current_user as get_current_user
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
@@ -34,7 +33,7 @@ async def update_avater(photo: UploadFile,
                         connection: Annotated[AIOEngine, Depends(connections)]):
     return await users.update_avatar(user, photo, connection)
 
-@user_router.get("/current-user", response_model= BareUsersModel)
+@user_router.get("/current-user", response_model= BareUserModelWithPhoto)
 async def current_user(connection: Annotated[AIOEngine, Depends(connections)]):
     populated_user = connection.get_collection(UsersModel).aggregate([
     {

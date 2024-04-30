@@ -52,6 +52,7 @@ async def register(request: Request, user_details: SignUp , connection: AIOEngin
     user.email_verification_token = hashed_token
     await connection.save(user)
     send_mail(**mail)
+
     return SignUpResponse(
         user = BareUsersModel(**user.model_dump()), 
         message= "User Registered Successfully",

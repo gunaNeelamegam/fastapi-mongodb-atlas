@@ -38,10 +38,12 @@ class BareUsersModel(BaseModel):
     role: str
     login_type: str
     is_email_verified: bool 
-    photo: AvatarInfo
     created_at: datetime
     updated_at:  datetime | None
-    
+
+class BareUserModelWithPhoto(BareUsersModel):
+    photo: AvatarInfo
+
 class SignUpResponse(BareResponse):
     user: BareUsersModel
     model_config = {
