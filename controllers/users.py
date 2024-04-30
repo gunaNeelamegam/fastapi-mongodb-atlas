@@ -21,13 +21,14 @@ from odmantic import ObjectId
 from pydantic import EmailStr
 from typing import Annotated
 from utils.uploads import upload
+from fastapi.responses import RedirectResponse
 
 async def register(request: Request, user_details: SignUp , connection: AIOEngine):
     user = await connection.get_collection(UsersModel).find_one({
         "$or": [
-            {
-                "username": user_details.username
-            },
+            # {
+            #     "username": user_details.username
+            # },
             {
                 "email": user_details.email
             }
@@ -291,3 +292,19 @@ async def assign_role(user: UsersModel, role: AvailableRoles, user_id: ObjectId 
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, 
                             detail= BareResponse(message="User Not Found", status= False).model_dump(),
                             )
+
+async def handle_social_login(user: UsersModel, setting = settings()):
+    access_token = user.generate_refresh_token()
+    refresh_token = user.generate_access_token()
+    tokens = {
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }
+
+    response = RedirectResponse("/")
+    for key, value in tokens.items():
+        response.set_cookie(
+            key,
+            value = value,
+            httponly= True, secure = setting.environment == "production")
+    return response

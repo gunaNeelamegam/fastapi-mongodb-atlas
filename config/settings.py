@@ -20,6 +20,9 @@ class Settings(BaseSettings):
         smtp_user: str
         temp_token_expiry: int
         temp_token_secret: str 
+        google_client_id: str
+        google_client_secret: str
+        session_secret: str
         model_config =  SettingsConfigDict(env_file = ENV_PATH)
 
 

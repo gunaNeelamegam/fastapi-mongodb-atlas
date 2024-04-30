@@ -22,7 +22,6 @@ FORMAT = {
 }
 class UsersModel(Model):
     username : str = Field(
-                unique= True, 
                 max_length= 50, min_length= 4, 
                 description= "UserName must be more than 4 to 50 character's")
     email: EmailStr = Field(unique= True)

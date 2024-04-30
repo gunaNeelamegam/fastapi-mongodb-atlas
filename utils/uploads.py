@@ -13,13 +13,14 @@ uploader = get_user_uploads()
 user_storage = next(uploader)
 
 
-async def upload(filename: str, data: bytes | str) -> ObjectId:
+async def upload(filename: str, data: bytes | str, mime_type: str = "image/png") -> ObjectId:
     if isinstance(data, str):
         data = data.encode()
         
-    id = user_storage.put(data ,filename = filename)
+    id = user_storage.put(data ,filename = filename, mime_type = mime_type)
     if isinstance(id, ObjectId):
         return id
     else:
         return ObjectId(id)
+
 __annotations__ = ("upload", "user_storage")
