@@ -55,12 +55,15 @@ async def google_login(request: Request):
 @auth_router.get("/google/callback")
 async def auth(request: Request, connection: Annotated[AIOEngine, Depends(connections)]):
     user: UsersModel | None = None
-
+    #FIXME: when session token is already exists in storage which will throws the exception as mismatch_state exception
+    # TEMP FIX
+    if request.cookies.get("session"):
+        request.cookies.pop("session")
     try:
         google_token_info = await oauth.google.authorize_access_token(request)
     except OAuthError as error:
-        print(error.args, error.description, error.uri, error.error)
         return HTMLResponse(f'<h1>{error.error}</h1>')
+    
     google_user = google_token_info.get('userinfo')
     if email:= google_user.get("email"):
         user = await connection.find_one(UsersModel, UsersModel.email == email)
